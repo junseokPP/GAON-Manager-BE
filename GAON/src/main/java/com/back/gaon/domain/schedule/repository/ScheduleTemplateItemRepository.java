@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface ScheduleTemplateItemRepository extends JpaRepository<ScheduleTemplateItem, Long> {
     List<ScheduleTemplateItem> findByVersionId(Long versionId);
+    List<ScheduleTemplateItem> findByVersionIdOrderByDayOfWeekAscStartTimeAsc(Long versionId);
 }
