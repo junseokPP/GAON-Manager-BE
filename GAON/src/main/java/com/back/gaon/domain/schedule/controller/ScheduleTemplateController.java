@@ -3,7 +3,7 @@ package com.back.gaon.domain.schedule.controller;
 
 import com.back.gaon.domain.schedule.dto.request.template.ScheduleTemplateCreateRequest;
 import com.back.gaon.domain.schedule.dto.response.template.ScheduleTemplateResponse;
-import com.back.gaon.domain.schedule.service.ScheduleTemplateService;
+import com.back.gaon.domain.schedule.service.template.ScheduleTemplateService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

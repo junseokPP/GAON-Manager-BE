@@ -1,4 +1,4 @@
-package com.back.gaon.domain.schedule.service;
+package com.back.gaon.domain.schedule.service.template;
 
 import com.back.gaon.domain.member.entity.Member;
 import com.back.gaon.domain.member.repository.MemberRepository;
