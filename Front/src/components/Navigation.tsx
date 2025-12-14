@@ -15,6 +15,7 @@ const NavList = styled.ul`
   padding: 0;
   margin: 0;
   display: flex;
+  flex-wrap: wrap;
   gap: 16px;
   align-items: center;
 `;
@@ -83,14 +84,40 @@ export const Navigation = ({ role }: NavigationProps) => {
             >
               학생 관리
             </NavItem>
+            <NavItem
+              $active={location.pathname.includes('/admin/behavior')}
+              onClick={() => navigate('/admin/behavior')}
+            >
+              학습 태도
+            </NavItem>
+            <NavItem
+              $active={location.pathname.includes('/admin/mock-exam')}
+              onClick={() => navigate('/admin/mock-exam')}
+            >
+              모의고사
+            </NavItem>
+            <NavItem
+              $active={location.pathname.includes('/admin/monthly-report')}
+              onClick={() => navigate('/admin/monthly-report')}
+            >
+              월별 보고서
+            </NavItem>
           </>
         ) : (
-          <NavItem
-            $active={location.pathname.includes('/student/schedules')}
-            onClick={() => navigate('/student/schedules')}
-          >
-            내 스케줄
-          </NavItem>
+          <>
+            <NavItem
+              $active={location.pathname.includes('/student/schedules')}
+              onClick={() => navigate('/student/schedules')}
+            >
+              내 스케줄
+            </NavItem>
+            <NavItem
+              $active={location.pathname.includes('/student/study')}
+              onClick={() => navigate('/student/study')}
+            >
+              학습 관리
+            </NavItem>
+          </>
         )}
         <LogoutButton $variant="secondary" onClick={handleLogout}>
           로그아웃
