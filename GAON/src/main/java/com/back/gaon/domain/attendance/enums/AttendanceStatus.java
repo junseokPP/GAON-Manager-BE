@@ -1,7 +1,9 @@
 package com.back.gaon.domain.attendance.enums;
 
 public enum AttendanceStatus {
-    PRESENT,   // 정상 등원
-    LATE,      // 지각
-    ABSENT     // 결석 (스케줄 끝날 때까지 미등원)
+    PRESENT ,       // 정상 출석
+    LEAVE,          // 하원
+    OUTING,         // 외출중
+    ABSENT,         // 최종 결석
+    NONE           // 아직 출결 시작 안됨
 }

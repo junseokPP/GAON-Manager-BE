@@ -1,82 +1,59 @@
 package com.back.gaon.domain.attendance.entity;
 
-import com.back.gaon.domain.attendance.enums.AttendanceSource;
 import com.back.gaon.domain.attendance.enums.AttendanceStatus;
-import com.back.gaon.domain.schedule.schedule.entity.Schedule;
-import com.back.gaon.global.base.BaseTimeEntity;
 import com.back.gaon.domain.member.entity.Member;
+import com.back.gaon.domain.member.entity.StudentDetail;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Table(
-        name = "attendance",
-        uniqueConstraints = @UniqueConstraint(
-                name = "uk_attendance_schedule_member",
-                columnNames = {"schedule_id", "member_id"}
-        ),
-        indexes = {
-                @Index(name = "idx_attendance_member_date", columnList = "member_id, attendance_date")
-        }
-)
-@Getter
-@Setter
+@Table(name = "attendance")
+@Getter @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Attendance extends BaseTimeEntity {
+public class Attendance {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 어떤 스케줄에 대한 출석인지
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "schedule_id", nullable = false)
-    private Schedule schedule;
+    // 어떤 학생의 출결인가?
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "student_id", nullable = false)
+    private Member student;
 
-    // 어떤 학생의 출석인지
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
+    // 날짜
+    private LocalDate date;
 
-    // 조회/통계용 출석 날짜 (스케줄 날짜 복사해서 넣을 예정)
-    @Column(name = "attendance_date", nullable = false)
-    private LocalDate attendanceDate;
-
-    // 등원 시간 (관리자가 입력)
-    private LocalDateTime checkInAt;
-
-    // 하원 시간 (관리자가 입력)
-    private LocalDateTime checkOutAt;
-
-    // 출석 상태 (정상, 지각, 결석)
+    // 요일 (optional)
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(name = "day_of_week")  // ← FIX: 예약어 회피
+    private DayOfWeek day;
+
+
+    // 실제 등원/하원 시간
+    private LocalTime attendTime;
+    private LocalTime leaveTime;
+
+    // 외출 로그들
+    @OneToMany(mappedBy = "attendance", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OutingLog> outingLogs = new ArrayList<>();
+
+    // 현재 상태 (출석/하원/외출중/…)
+    @Enumerated(EnumType.STRING)
     private AttendanceStatus status;
 
-    // 이 데이터가 어디서 왔는지
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private AttendanceSource source;
+    // 통보지각 / 통보결석을 눌렀는지 여부
+    private boolean excuseLate;     // 통보지각
+    private boolean excuseAbsent;   // 통보결석
 
-    // 사전 연락 등으로 "정당한" 지각/결석인지 여부
-    // true면 벌점에서 제외하거나 따로 처리 가능
-    @Column(nullable = false)
-    private boolean excused;
-
-    @Column(length = 255)
-    private String memo;
-
-    // 편의 메서드
-    public boolean isCheckedIn() {
-        return checkInAt != null;
-    }
-
-    public boolean isCheckedOut() {
-        return checkOutAt != null;
-    }
+    private String memo; // 관리자 메모
 }

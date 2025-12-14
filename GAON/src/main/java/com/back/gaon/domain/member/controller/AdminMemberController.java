@@ -61,9 +61,9 @@ public class AdminMemberController {
     public ResponseEntity<List<StudentResponse>> getAllStudents(
             @RequestParam(required = false) String status
     ) {
-        // TODO: 구현
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(adminService.getAllStudents(status));
     }
+
 
     /**
      * 학생 상세 조회
@@ -71,9 +71,9 @@ public class AdminMemberController {
      */
     @GetMapping("/students/{id}")
     public ResponseEntity<StudentResponse> getStudent(@PathVariable Long id) {
-        // TODO: 구현
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(adminService.getStudent(id));
     }
+
 
     /**
      * 학생 정보 수정
@@ -84,9 +84,9 @@ public class AdminMemberController {
             @PathVariable Long id,
             @RequestBody @Valid StudentUpdateRequest request
     ) {
-        // TODO: 구현
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(adminService.updateStudent(id, request));
     }
+
 
     /**
      * 학생 비활성화
@@ -94,9 +94,10 @@ public class AdminMemberController {
      */
     @DeleteMapping("/students/{id}")
     public ResponseEntity<Void> deactivateStudent(@PathVariable Long id) {
-        // TODO: 구현
+        adminService.deactivateStudent(id);
         return ResponseEntity.noContent().build();
     }
+
 
     /**
      * 학부모-자녀 수동 연결

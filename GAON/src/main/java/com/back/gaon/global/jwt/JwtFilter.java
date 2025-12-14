@@ -9,12 +9,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -35,15 +37,22 @@ public class JwtFilter extends OncePerRequestFilter {
 
             Claims claims = jwtProvider.getClaims(token);
             Long memberId = Long.valueOf(claims.getSubject());
+            String role = claims.get("role", String.class); // JWT에서 역할 꺼내기
 
-            Member member = memberRepository.findById(memberId)
-                    .orElse(null);
+            Member member = memberRepository.findById(memberId).orElse(null);
 
             if (member != null) {
+                // 역할을 GrantedAuthority로 변환
+                SimpleGrantedAuthority authority =
+                        new SimpleGrantedAuthority(role);
+
                 UsernamePasswordAuthenticationToken auth =
                         new UsernamePasswordAuthenticationToken(
-                                member, null, null
+                                member,
+                                null,
+                                List.of(authority)  // ⭐ 권한을 여기에 넣어줌
                         );
+
                 auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
@@ -51,6 +60,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
+
 
     private String resolveToken(HttpServletRequest request) {
         String header = request.getHeader("Authorization");

@@ -32,11 +32,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     List<Member> findByRoleAndStatus(Role role, com.back.gaon.domain.member.enums.MemberStatus status);
 
     /**
-     * 이메일로 회원 찾기 (선택)
-     */
-    Optional<Member> findByEmail(String email);
-
-    /**
      * setupToken으로 회원 찾기 (학부모 비밀번호 설정용)
      */
     Optional<Member> findBySetupToken(String setupToken);

@@ -1,6 +1,7 @@
 package com.back.gaon.domain.member.repository;
 
 import com.back.gaon.domain.member.entity.StudentDetail;
+import com.back.gaon.domain.member.enums.MemberStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -35,4 +36,6 @@ public interface StudentDetailRepository extends JpaRepository<StudentDetail, Lo
      * 좌석 번호 중복 체크
      */
     boolean existsBySeatNumber(String seatNumber);
+
+    List<StudentDetail> findByMemberStatus(MemberStatus memberStatus);
 }

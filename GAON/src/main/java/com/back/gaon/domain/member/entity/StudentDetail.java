@@ -22,10 +22,10 @@ import java.time.LocalDate;
 public class StudentDetail {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;  // Member의 PK를 그대로 사용
 
     @OneToOne
-    @MapsId
     @JoinColumn(name = "member_id")
     private Member member;
 

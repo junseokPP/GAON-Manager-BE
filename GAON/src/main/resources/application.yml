@@ -23,3 +23,7 @@ spring:
   h2:
     console:
       enabled: true
+
+# 🔥 JWT 설정 추가 (spring과 동일한 레벨)
+jwt:
+  secret: dGhpc2lzYXZlcnlsb25nc2VjcmV0a2V5Zm9yand0dG9rZW5nZW5lcmF0aW9uYW5kdmFsaWRhdGlvbg==

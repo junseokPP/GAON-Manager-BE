@@ -1,9 +1,6 @@
 package com.back.gaon.domain.member.service;
 
-import com.back.gaon.domain.member.dto.ParentCreateRequest;
-import com.back.gaon.domain.member.dto.StudentCreateRequest;
-import com.back.gaon.domain.member.dto.MemberResponse;
-import com.back.gaon.domain.member.dto.StudentCreateResponse;
+import com.back.gaon.domain.member.dto.*;
 import com.back.gaon.domain.member.entity.Member;
 import com.back.gaon.domain.member.entity.StudentDetail;
 import com.back.gaon.domain.member.enums.MemberStatus;
@@ -15,7 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -232,4 +231,134 @@ public class AdminService {
         System.out.println("📱 SMS 발송: " + parent.getPhone());
         System.out.println(message);
     }
+
+    @Transactional(readOnly = true)
+    public List<StudentResponse> getAllStudents(String status) {
+
+        List<StudentDetail> students;
+
+        if (status != null) {
+            students = studentDetailRepository.findByMemberStatus(
+                    MemberStatus.valueOf(status)
+            );
+        } else {
+            students = studentDetailRepository.findAll();
+        }
+
+        return students.stream()
+                .map(detail -> {
+                    Member student = detail.getMember();
+                    Member parent = detail.getParent();
+
+                    return StudentResponse.builder()
+                            .id(student.getId())
+                            .name(student.getName())
+                            .phone(student.getPhone())
+                            .gender(student.getGender())
+
+                            .school(detail.getSchool())
+                            .grade(detail.getGrade())
+                            .seatNumber(detail.getSeatNumber())
+                            .registrationDate(detail.getRegistrationDate())
+
+                            .emergencyContact(detail.getEmergencyContact())
+                            .memo(detail.getMemo())
+
+                            .parentId(parent != null ? parent.getId() : null)
+                            .parentPhone(parent != null ? parent.getPhone() : null)
+
+                            .build();
+                })
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public StudentResponse getStudent(Long studentId) {
+
+        StudentDetail detail = studentDetailRepository.findByMemberId(studentId)
+                .orElseThrow(() -> new EntityNotFoundException("학생 정보가 존재하지 않습니다."));
+
+        Member student = detail.getMember();
+        Member parent = detail.getParent();
+
+        return StudentResponse.builder()
+                .id(student.getId())
+                .name(student.getName())
+                .phone(student.getPhone())
+                .gender(student.getGender())
+
+                .school(detail.getSchool())
+                .grade(detail.getGrade())
+                .seatNumber(detail.getSeatNumber())
+                .registrationDate(detail.getRegistrationDate())
+
+                .emergencyContact(detail.getEmergencyContact())
+                .memo(detail.getMemo())
+
+                .parentId(parent != null ? parent.getId() : null)
+                .parentPhone(parent != null ? parent.getPhone() : null)
+
+                .build();
+    }
+
+    @Transactional
+    public StudentUpdateResponse updateStudent(Long studentId, StudentUpdateRequest request) {
+
+        // 1) 학생 Member 조회
+        Member student = memberRepository.findById(studentId)
+                .orElseThrow(() -> new EntityNotFoundException("학생을 찾을 수 없습니다."));
+
+        if (student.getRole() != Role.STUDENT) {
+            throw new IllegalArgumentException("해당 회원은 학생이 아닙니다.");
+        }
+
+        // 2) StudentDetail 조회
+        StudentDetail detail = studentDetailRepository.findByMemberId(studentId)
+                .orElseThrow(() -> new EntityNotFoundException("학생 상세 정보가 없습니다."));
+
+        // 3) 좌석 번호 중복 체크 (변경된 경우에만)
+        if (request.getSeatNumber() != null &&
+                !request.getSeatNumber().equals(detail.getSeatNumber()) &&
+                studentDetailRepository.existsBySeatNumber(request.getSeatNumber())) {
+
+            throw new IllegalArgumentException("이미 사용 중인 좌석 번호입니다: " + request.getSeatNumber());
+        }
+
+        // 4) Member 수정 (이름만 변경 가능)
+        student.setName(request.getName());
+
+        // 5) StudentDetail 수정
+        detail.setSchool(request.getSchool());
+        detail.setGrade(request.getGrade());
+        detail.setSeatNumber(request.getSeatNumber());
+        detail.setEmergencyContact(request.getEmergencyContact());
+        detail.setMemo(request.getMemo());
+
+        // 6) 저장
+        memberRepository.save(student);
+        studentDetailRepository.save(detail);
+
+        // 7) Response 반환
+        return StudentUpdateResponse.builder()
+                .id(student.getId())
+                .name(student.getName())
+                .school(detail.getSchool())
+                .grade(detail.getGrade())
+                .seatNumber(detail.getSeatNumber())
+                .emergencyContact(detail.getEmergencyContact())
+                .memo(detail.getMemo())
+                .updatedAt(LocalDate.now())
+                .build();
+    }
+
+
+    public void deactivateStudent(Long id) {
+        Member student = memberRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("학생을 찾을 수 없습니다."));
+
+        student.setStatus(MemberStatus.INACTIVE);
+        memberRepository.save(student);
+    }
+
+
 }

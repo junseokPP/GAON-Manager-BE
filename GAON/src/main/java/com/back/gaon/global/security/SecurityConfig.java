@@ -29,19 +29,22 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
 
-                // ⭐ 세션 사용 안 함 (JWT에서는 필수)
+                .headers(headers -> headers.frameOptions(frame -> frame.disable()))
+
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers("/api/v1/admin/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated()
                 )
 
-                // ⭐ JWT 필터 추가 (가장 중요)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 
                 .build();
     }
+
 }
