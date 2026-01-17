@@ -96,3 +96,9 @@ export const Modal = ({ isOpen, onClose, title, children, footer }: ModalProps) 
 
 
 
+
+
+
+
+
+

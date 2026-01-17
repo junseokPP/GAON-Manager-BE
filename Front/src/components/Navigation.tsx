@@ -20,7 +20,7 @@ const NavList = styled.ul`
   align-items: center;
 `;
 
-const NavItem = styled.li`
+const NavItem = styled.li<{ $active?: boolean }>`
   cursor: pointer;
   padding: 8px 16px;
   border-radius: 6px;
@@ -32,7 +32,7 @@ const NavItem = styled.li`
     background-color: #F5F5F5;
   }
 
-  ${({ $active }: { $active: boolean }) =>
+  ${({ $active }) =>
     $active &&
     `
     background-color: #FFC107;
@@ -85,8 +85,20 @@ export const Navigation = ({ role }: NavigationProps) => {
               학생 관리
             </NavItem>
             <NavItem
-              $active={location.pathname.includes('/admin/behavior')}
-              onClick={() => navigate('/admin/behavior')}
+              $active={location.pathname.includes('/admin/planner')}
+              onClick={() => navigate('/admin/planner')}
+            >
+              플래너
+            </NavItem>
+            <NavItem
+              $active={location.pathname.includes('/admin/vocabulary')}
+              onClick={() => navigate('/admin/vocabulary')}
+            >
+              영단어 학습
+            </NavItem>
+            <NavItem
+              $active={location.pathname.includes('/admin/attitude')}
+              onClick={() => navigate('/admin/attitude')}
             >
               학습 태도
             </NavItem>

@@ -12,9 +12,12 @@ import ParentSetupPage from './pages/ParentSetupPage';
 import LinkParentChildPage from './pages/LinkParentChildPage';
 import AttendanceDashboardPage from './pages/AttendanceDashboardPage';
 import StudentStudyPage from './pages/StudentStudyPage';
-import BehaviorCreatePage from './pages/BehaviorCreatePage';
-import MockExamPage from './pages/MockExamPage';
-import MonthlyReportPage from './pages/MonthlyReportPage';
+import PlannerPage from './pages/admin/PlannerPage';
+import VocabularyPage from './pages/admin/VocabularyPage';
+import AttitudePage from './pages/admin/AttitudePage';
+import MockExamPage from './pages/admin/MockExamPage';
+import MonthlyReportListPage from './pages/admin/MonthlyReportListPage';
+import MonthlyReportPage from './pages/admin/MonthlyReportPage';
 
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const token = localStorage.getItem('accessToken');
@@ -49,9 +52,12 @@ function App() {
             <Route path="students/:id" element={<StudentDetailPage />} />
             <Route path="students/:id/edit" element={<StudentEditPage />} />
             <Route path="link-parent-child" element={<LinkParentChildPage />} />
-            <Route path="behavior" element={<BehaviorCreatePage />} />
+            <Route path="planner" element={<PlannerPage />} />
+            <Route path="vocabulary" element={<VocabularyPage />} />
+            <Route path="attitude" element={<AttitudePage />} />
             <Route path="mock-exam" element={<MockExamPage />} />
-            <Route path="monthly-report" element={<MonthlyReportPage />} />
+            <Route path="monthly-report" element={<MonthlyReportListPage />} />
+            <Route path="monthly-report/:studentId" element={<MonthlyReportPage />} />
           </Route>
           <Route
             path="/student"
